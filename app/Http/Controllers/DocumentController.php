@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class DocumentController extends Controller
@@ -61,5 +62,12 @@ class DocumentController extends Controller
     public function destroy(Document $document)
     {
         //
+    }
+
+    public function getByPatient($id)
+    {
+        $patient = Patient::findOrFail($id);
+        $documents = $patient->document;
+        return response()->json(['message' => 'Амжилттай', 'document' => $documents], 200);
     }
 }

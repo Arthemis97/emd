@@ -10,5 +10,16 @@ class Patient extends Model
     use HasFactory;
 
     protected $table = 'patient';
-    protected $fillable = ['first_name', 'last_name', 'gender', 'dob', 'age', 'rd'];
+    protected $fillable = ['first_name', 'last_name', 'gender', 'dob', 'age', 'rd', 'package_id'];
+
+
+    public function package()
+    {
+        return $this->belongsTo('App\Models\Package');
+    }
+
+    public function document()
+    {
+        return $this->hasMany('App\Models\Document');
+    }
 }

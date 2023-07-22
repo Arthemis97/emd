@@ -2,17 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.ck-content, .document-padding {
-	padding: 20mm 15mm 20mm 30mm !important;
+.ck-content,
+.document-padding {
+    padding: 20mm 15mm 20mm 30mm !important;
 }
 
 .ck.ck-editor {
-	width: 21cm !important;
+    width: 21cm !important;
 }
 .ck-powered-by-balloon {
-	display: none !important;
+    display: none !important;
 }
 
 .ck-editor__editable {
-	font-size: 12px;
+    font-size: 12px;
 }

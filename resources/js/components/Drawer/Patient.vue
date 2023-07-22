@@ -1,6 +1,10 @@
 <script setup>
 import usePatientStore from '../../stores/patient';
+import usePackageStore from '../../stores/package';
+import { onMounted } from 'vue';
 const patientStore = usePatientStore()
+const packageStore = usePackageStore()
+const { getPackages } = storeToRefs(packageStore)
 const open = ref(false)
 const title = ref("Үйлчлүүлэгч нэмэх")
 const patient = ref({
@@ -10,6 +14,7 @@ const patient = ref({
 	gender: '',
 	dob: '',
 	age: '',
+	package_id: ''
 })
 const rdValidated = ref(true)
 useEvent.on('drawer:patient:open', (e) => {
@@ -102,6 +107,10 @@ const reset = () => {
 		age: '',
 	}
 }
+
+onMounted(async () => {
+	await packageStore.fetchPackages()
+})
 </script>
 <template>
 	<a-drawer v-model:open="open" :title="title" :destroyOnClose="true" @afterOpenChange="afterOpenChange"
@@ -127,6 +136,13 @@ const reset = () => {
 			</a-form-item>
 			<a-form-item label="Нас">
 				<a-input v-model:value="patient.age" :disabled="true"></a-input>
+			</a-form-item>
+			<a-form-item label="Багц">
+				<a-select v-model:value="patient.package_id" placeholder="Сонгох">
+					<a-select-option :value="pkg.id" v-for="(pkg, pkg_index) in getPackages" :key="pkg_index">
+						{{ pkg.name }}
+					</a-select-option>
+				</a-select>
 			</a-form-item>
 		</a-form>
 		<a-button @click="save" class="tw-w-full" type="primary">Хадгалах</a-button>

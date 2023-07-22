@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Package;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PackageController extends Controller
 {
@@ -12,7 +13,8 @@ class PackageController extends Controller
      */
     public function index()
     {
-        //
+        $packages = Package::get();
+        return response()->json($packages);
     }
 
     /**
@@ -28,15 +30,26 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        $package = Package::create($request->all());
+        if ($package) {
+            return response()->json(['message' => 'Багц нэмэгдлээ', 'package' => $package]);
+        } else {
+            return response()->json(['message' => 'Алдаа гарлаа', 'package' => null], 500);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Package $package)
+    public function show(Request $request)
     {
-        //
     }
 
     /**
@@ -50,16 +63,31 @@ class PackageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Package $package)
+    public function update(Request $request, $id)
     {
-        //
+        $package = Package::find($id);
+
+        if ($package) {
+            $package->fill($request->all());
+            $package->save();
+            return response()->json(['message' => 'Багц хадгалагдлаа', 'package' => $package], 200);
+        } else {
+            return response()->json(['message' => 'Багц байхгүй байна'], 404);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Package $package)
+    public function destroy($id)
     {
-        //
+        $package = Package::find($id);
+
+        if ($package) {
+            $package->delete();
+            return response()->json(['message' => 'Багц устгагдлаа'], 200);
+        } else {
+            return response()->json(['message' => 'Багц байхгүй байна'], 404);
+        }
     }
 }

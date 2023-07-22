@@ -7,6 +7,8 @@ const blank = ref({})
 useEvent.on('modal:blank:open', (blankItem) => {
 	if(blankItem.id) {
 		blank.value = blankItem
+	} else {
+		blank.value = {}
 	}
 	visible.value = true
 })
@@ -20,9 +22,10 @@ const save = async () => {
 		visible.value = false
 	}
 }
+
 </script>
 <template>
-	<a-modal v-model:open="visible" @ok="save">
+	<a-modal v-model:open="visible" @ok="save" :destroyOnClose="true">
 		<a-form layout="vertical">
 			<a-form-item label="Нэр">
 				<a-input v-model:value="blank.name"></a-input>

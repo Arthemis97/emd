@@ -10,6 +10,10 @@ const logout = () => {
 	authStore.logout();
 	router.push('/login')
 }
+
+const showPackageModal = (row = null) => {
+	useEvent.emit('modal:package:open', row)
+}
 </script>
 <template>
 	<div class="tw-h-10 tw-flex tw-justify-between tw-bg-white tw-shadow tw-items-center tw-text-xs">
@@ -19,6 +23,8 @@ const logout = () => {
 		<div class="tw-px-4">
 			<a-space>
 				<a-button @click="router.push('/')" size="small" type="primary">Үйлчлүүлэгч</a-button>
+				<a-button @click="showPackageModal()" v-if="getUser && getUser.type === 'admin'" size="small"
+					type="primary">Багц</a-button>
 				<a-button @click="router.push('/users')" v-if="getUser && getUser.type === 'admin'" size="small"
 					type="primary">Ажилтан</a-button>
 				<div @click="logout" class="tw-cursor-pointer tw-flex tw-space-x-1">

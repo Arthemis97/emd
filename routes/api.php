@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlankController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +55,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blanks', [BlankController::class, 'store']);
     Route::put('/blanks/{id}', [BlankController::class, 'update']);
     Route::delete('/blanks/{id}', [BlankController::class, 'destroy']);
+
+    // PACKAGE CONTROLLER
+    Route::get('/packages', [PackageController::class, 'index']);
+    Route::post('/packages', [PackageController::class, 'store']);
+    Route::put('/packages/{id}', [PackageController::class, 'update']);
+    Route::delete('/packages/{id}', [PackageController::class, 'destroy']);
+
+    // TEMPLATE CONTROLLER
+    Route::get('/templates', [TemplateController::class, 'index']);
+    Route::get('/templates/{id}', [TemplateController::class, 'show']);
+    Route::post('/templates', [TemplateController::class, 'store']);
+    Route::put('/templates/{id}', [TemplateController::class, 'update']);
+    Route::delete('/templates/{id}', [TemplateController::class, 'destroy']);
+
+    // DOCUMENT CONTROLLER
+    Route::get('/documents/patient/{id}', [DocumentController::class, 'getByPatient']);
 });
 
 

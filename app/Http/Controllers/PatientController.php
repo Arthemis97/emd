@@ -11,9 +11,23 @@ class PatientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $patients = Patient::paginate(10);
+        $query = Patient::query()->with('package.template');
+
+        if ($request->has('last_name')) {
+            $query->where('last_name', 'like', '%' . $request->input('last_name') . '%');
+        }
+
+        if ($request->has('first_name')) {
+            $query->where('first_name', 'like', '%' . $request->input('first_name') . '%');
+        }
+
+        if ($request->has('rd')) {
+            $query->where('rd', 'like', '%' . $request->input('rd') . '%');
+        }
+
+        $patients = $query->paginate($request->get('pageSize'));
 
         return response()->json($patients);
     }
@@ -56,7 +70,7 @@ class PatientController extends Controller
      */
     public function show($rd)
     {
-        $patient = Patient::whereRaw('LOWER(rd) = ?', strtolower($rd))->first();
+        $patient = Patient::whereRaw('LOWER(rd) = ?', strtolower($rd))->with('package.template')->first();
         if ($patient) {
             return response()->json(['message' => 'Амжилттай', 'patient' => $patient], 200);
         } else {
