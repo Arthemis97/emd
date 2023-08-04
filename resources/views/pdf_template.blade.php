@@ -10,7 +10,7 @@
 		}
 
 		body {
-			font-family: Arial, sans-serif;
+			font-family: DejaVu Sans, serif;
 			margin: 20px;
 		}
 	</style>

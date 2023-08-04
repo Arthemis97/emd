@@ -1,4 +1,5 @@
 <script setup>
+import { UpOutlined, DownOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue';
 import { useDate } from 'vue3-dayjs-plugin/useDate'
 import useDocumentStore from '../../stores/document'
 import usePatientStore from '../../stores/patient'
@@ -53,6 +54,7 @@ const handleEditChange = (e) => {
 
 const tabChange = () => {
 	addVisible.value = false
+	toPrint.value = []
 	useEvent.emit('preview:html:remove')
 	useEvent.emit('documentedit:data:remove')
 	useEvent.emit('document:data:remove')
@@ -94,6 +96,22 @@ const isPrintChecked = (id) => {
 const deleteDocument = async (id) => {
 	await documentStore.deleteDocument(id)
 }
+
+const changeOrder = (index, dir) => {
+	if(dir) {
+		if (index > 0) {
+			const temp = getPatientDocuments.value[index];
+			getPatientDocuments.value[index] = getPatientDocuments.value[index - 1];
+			getPatientDocuments.value[index - 1] = temp;
+		}
+	} else {
+		if (index < getPatientDocuments.value.length - 1) {
+			const temp = getPatientDocuments.value[index];
+			getPatientDocuments.value[index] = getPatientDocuments.value[index + 1];
+			getPatientDocuments.value[index + 1] = temp;
+		}
+	}
+}
 </script>
 <template>
 	<a-drawer v-model:open="visible" :destroyOnClose="true" @afterOpenChange="tabChange" width="100%">
@@ -129,27 +147,49 @@ const deleteDocument = async (id) => {
 												<div class="tw-flex-1">
 													<perfect-scrollbar class="tw-h-[300px]">
 														<a-list size="small" bordered :data-source="filterOption">
-															<template #renderItem="{ item }">
+															<template #renderItem="{ item, index }">
 																<a-list-item>
 																	<div class="tw-flex tw-w-full tw-justify-between">
-																		<div class="tw-flex-1">
+																		<div class="tw-flex tw-flex-1 tw-space-x-1">
 																			<a-checkbox :checked="isPrintChecked(item.id)"
 																				class="tw-mr-2"
 																				@change="handlePrintCheckbox($event, item.id)" />
-																			<b>{{ item.template ? item.template.name : ''
+																			<div>
+																				<a-button size="small"
+																					@click="changeOrder(index, true)">
+																					<template #icon>
+																						<UpOutlined />
+																					</template>
+																				</a-button>
+																				<a-button size="small"
+																					@click="changeOrder(index, false)">
+																					<template #icon>
+																						<DownOutlined />
+																					</template>
+																				</a-button>
+																			</div>
+																			<div><b>{{ item.template ? item.template.name :
+																				''
 																			}}</b> -
-																			{{ $date(item.created_at).format(`YYYY-MM-DD
-																			HH:mm`) }}
+																				{{ $date(item.created_at).format(`YYYY-MM-DD
+																				HH:mm`) }}</div>
 																		</div>
 																		<a-space>
 																			<a-button type="primary" size="small"
-																				@click="handleEditChange(item.id)">Засварлах</a-button>
+																				@click="handleEditChange(item.id)">
+																				<template #icon>
+																					<EditOutlined />
+																				</template>
+																			</a-button>
 																			<a-popconfirm class="tw-z-[10000]"
 																				title="Устгах уу?" ok-text="Тийм"
 																				cancel-text="Үгүй"
 																				@confirm="deleteDocument(item.id)">
-																				<a-button danger
-																					size="small">Устгах</a-button>
+																				<a-button danger size="small">
+																					<template #icon>
+																						<DeleteOutlined />
+																					</template>
+																				</a-button>
 																			</a-popconfirm>
 																		</a-space>
 																	</div>

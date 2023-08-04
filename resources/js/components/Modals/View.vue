@@ -2,7 +2,6 @@
 import usePackageStore from '../../stores/package'
 import useTemplateStore from "../../stores/template"
 import useDocumentStore from "../../stores/document"
-import VueDocumentEditor from 'vue-document-editor'
 
 const templateStore = useTemplateStore()
 const packageStore = usePackageStore()
@@ -28,31 +27,20 @@ const printObj = {
 }
 
 const downloadPdf = (pdfData, filename) => {
-     // Convert base64 to a Blob
      const byteCharacters = atob(pdfData);
       const byteArrays = [];
-
       for (let offset = 0; offset < byteCharacters.length; offset += 512) {
         const slice = byteCharacters.slice(offset, offset + 512);
-
         const byteNumbers = new Array(slice.length);
         for (let i = 0; i < slice.length; i++) {
           byteNumbers[i] = slice.charCodeAt(i);
         }
-
         const byteArray = new Uint8Array(byteNumbers);
         byteArrays.push(byteArray);
       }
-
       const blob = new Blob(byteArrays, { type: 'application/pdf' });
-
-      // Create a URL for the Blob
       const url = URL.createObjectURL(blob);
-
-      // Open the PDF in a new tab
       window.open(url, '_blank');
-
-      // Clean up the URL object after the new tab is opened
       URL.revokeObjectURL(url);
 }
 

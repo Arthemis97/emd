@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DocumentController extends Controller
 {
@@ -120,7 +120,8 @@ class DocumentController extends Controller
     public function getPDF(Request $request)
     {
         $data = $request->all();
-        $pdf = PDF::loadView('pdf_template', $data = ['content' => $data['html'][0]]);
+
+        $pdf = Pdf::loadView('pdf_template', $data = ['content' => $data['html'][0]]);
         $pdfContent = $pdf->output();
         $base64EncodedPDF = base64_encode($pdfContent);
         return response()->json(['message' => 'Амжилттай', 'data' => $base64EncodedPDF], 200);
