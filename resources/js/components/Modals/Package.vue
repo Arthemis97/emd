@@ -3,7 +3,6 @@ import usePackageStore from "../../stores/package"
 const packageStore = usePackageStore()
 const visible = ref(false)
 const addVisible = ref(false)
-const editVisible = ref(false)
 const pkg = ref({})
 const initLoading = ref(false)
 const { getPackages } = storeToRefs(packageStore)
@@ -16,7 +15,6 @@ useEvent.on('modal:package:open', async () => {
 const savePackage = async (item) => {
 	if(item.id) {
 		await packageStore.updatePackage(item)
-		editVisible.value = false
 		pkg.value = {}
 	} else {
 		await packageStore.storePackage(pkg.value)
@@ -58,22 +56,7 @@ const afterClose = async () => {
 				<template #renderItem="{ item }">
 					<a-list-item>
 						<template #actions>
-							<a-dropdown :trigger="['click']" :open="editVisible">
-								<a key="list-loadmore-edit" @click="editVisible = !editVisible">Засах</a>
-								<template #overlay>
-									<div class="tw-shadow tw-w-52 tw-py-2 tw-px-3 tw-bg-white">
-										<a-form layout="vertical">
-											<a-form-item label="Нэр">
-												<a-input v-model:value="item.name" />
-											</a-form-item>
-											<a-button size="small" class="tw-w-full tw-mb-2"
-												@click="editVisible = false">Цуцлах</a-button>
-											<a-button size="small" type="primary" class="tw-w-full"
-												@click="savePackage(item)">Хадгалах</a-button>
-										</a-form>
-									</div>
-								</template>
-							</a-dropdown>
+							<a key="list-loadmore-edit" @click="savePackage(item)">Хадгалах</a>
 
 							<a-popconfirm title="Устгах уу?" ok-text="Тийм" cancel-text="Үгүй"
 								@confirm="deletePackage(item.id)">
@@ -82,7 +65,7 @@ const afterClose = async () => {
 						</template>
 						<a-list-item-meta>
 							<template #title>
-								{{ item.name }}
+								<a-input v-model:value="item.name"></a-input>
 							</template>
 						</a-list-item-meta>
 					</a-list-item>

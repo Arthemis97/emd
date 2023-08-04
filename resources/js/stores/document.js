@@ -18,11 +18,23 @@ const useDocumentStore = defineStore("document", {
                 message.error(resp.data?.message);
             }
         },
+        async fetchDocumentsById(id) {
+            const resp = await useRequest.get(`/documents/${id}`);
+            if (resp.resp.status === 200) {
+                return resp.data.document;
+            } else {
+                message.error(resp.data?.message);
+            }
+        },
         async storeDocument(data) {
             const resp = await useRequest.post("/documents", data);
             if (resp.resp.status === 200) {
                 message.success(resp.data?.message || "Маягт нэмэгдлээ");
                 this.documents = [...this.documents, resp.data.document];
+                this.patientDocuments = [
+                    ...this.patientDocuments,
+                    resp.data.document,
+                ];
             } else {
                 message.error(resp.data?.message || "Алдаа гарлаа");
             }
@@ -50,6 +62,13 @@ const useDocumentStore = defineStore("document", {
                         ...this.documents.slice(index + 1),
                     ];
                     this.documents = updatedDocuments;
+
+                    const updatedPatientDocuments = [
+                        ...this.patientDocuments.slice(0, index),
+                        resp.data.document,
+                        ...this.patientDocuments.slice(index + 1),
+                    ];
+                    this.patientDocuments = updatedPatientDocuments;
                 }
             } else {
                 message.error(resp.data?.message || "Алдаа гарлаа");
@@ -61,6 +80,20 @@ const useDocumentStore = defineStore("document", {
                 message.success(resp.data?.message || "Маягт устгагдлаа");
                 const temp = this.documents.filter((i) => i.id !== id);
                 this.documents = temp;
+
+                const tempdoc = this.patientDocuments.filter(
+                    (i) => i.id !== id
+                );
+                this.patientDocuments = tempdoc;
+            } else {
+                message.error(resp.data?.message || "Алдаа гарлаа");
+            }
+        },
+        async getPDF(html) {
+            const resp = await useRequest.post(`/documents/pdf`, { html });
+            if (resp.resp.status === 200) {
+                message.success(resp.data?.message || "Амжилттай");
+                return resp.data;
             } else {
                 message.error(resp.data?.message || "Алдаа гарлаа");
             }

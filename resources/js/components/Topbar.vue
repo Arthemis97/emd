@@ -11,6 +11,10 @@ const logout = () => {
 	router.push('/login')
 }
 
+useEvent.on('logout', () => {
+	logout();
+})
+
 const showPackageModal = (row = null) => {
 	useEvent.emit('modal:package:open', row)
 }

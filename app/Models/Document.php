@@ -19,4 +19,9 @@ class Document extends Model
     {
         return $this->belongsTo('App\Models\Patient');
     }
+
+    public function template()
+    {
+        return $this->belongsTo('App\Models\Template');
+    }
 }

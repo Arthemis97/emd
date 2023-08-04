@@ -70,7 +70,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/templates/{id}', [TemplateController::class, 'destroy']);
 
     // DOCUMENT CONTROLLER
+    Route::get('/documents', [DocumentController::class, 'index']);
+    Route::get('/documents/{id}', [DocumentController::class, 'show']);
+    Route::post('/documents', [DocumentController::class, 'store']);
+    Route::put('/documents/{id}', [DocumentController::class, 'update']);
+    Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
     Route::get('/documents/patient/{id}', [DocumentController::class, 'getByPatient']);
+    Route::post('/documents/pdf', [DocumentController::class, 'getPDF']);
 });
 
 

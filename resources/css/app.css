@@ -2,18 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-.ck-content,
-.document-padding {
-    padding: 20mm 15mm 20mm 30mm !important;
+:root {
+    --page-background: unset; /* Pages background */
+    --page-box-shadow: unset; /* Pages box-shadow */
+    --page-border: unset; /* Pages border */
+    --page-border-radius: unset; /* Pages border-radius */
 }
 
-.ck.ck-editor {
-    width: 21cm !important;
-}
-.ck-powered-by-balloon {
-    display: none !important;
+body {
+    font-family: Montserrat;
 }
 
-.ck-editor__editable {
-    font-size: 12px;
+.ant-popover {
+    z-index: 10000 !important;
+}
+.ant-card-small > .ant-card-body {
+    /* padding: 4px; */
 }

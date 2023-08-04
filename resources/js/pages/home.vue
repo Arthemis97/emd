@@ -23,9 +23,9 @@ const searchInput = ref();
 const loading = ref(false)
 
 const columns = [{
-  title: 'Овог',
-  dataIndex: 'last_name',
-  customFilterDropdown: true,
+	title: 'Овог',
+	dataIndex: 'last_name',
+	customFilterDropdown: true,
 	onFilter: (value, record) => {
 		return true;
 	},
@@ -85,8 +85,8 @@ const columns = [{
   width: '14%'
 }]
 
-const handleTableChange = async (e) => {
-	patientStore.setPagination(e)
+const handleTableChange = async (pagination, filters, sorter) => {
+	patientStore.setPagination(pagination)
 	await patientStore.fetchPatients(filters)
 }
 
@@ -102,12 +102,14 @@ const deletePatient = (id) => {
 	patientStore.deletePatient(id)
 }
 
-const toDocument = (rd) => {
-	router.push(`/document/${rd}`)
-}
 
 const fetchPatients = async (filters) => {
 	await patientStore.fetchPatients(filters)
+}
+
+
+const showDocumentDrawer = (rd) => {
+	useEvent.emit('drawer:document:open', rd)
 }
 
 const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -115,13 +117,11 @@ const handleSearch = (selectedKeys, confirm, dataIndex) => {
   filters[dataIndex] = selectedKeys[0] || '';
   state.searchText = selectedKeys[0];
   state.searchedColumn = dataIndex;
-  fetchPatients(filters)
 };
 
 const handleReset = clearFilters => {
   clearFilters({ confirm: true });
   state.searchText = '';
-  fetchPatients(filters)
 };
 
 onMounted(() => {
@@ -167,11 +167,7 @@ onMounted(() => {
 
 			<template #bodyCell="{ column, text, record }">
 				<template v-if="column.dataIndex === 'last_name'">
-					<a-button @click="toDocument(record.rd)">
-						<template #icon>
-							<FormOutlined />
-						</template>
-					</a-button> {{ record.last_name }}
+					{{ record.last_name }}
 				</template>
 				<template v-if="column.dataIndex === 'image'">
 					<a-button size="small" @click="showImageModal(record.id)">
@@ -185,10 +181,21 @@ onMounted(() => {
 					{{ record.gender ? 'Эр' : 'Эм' }}
 				</template>
 				<template v-if="column.dataIndex === 'package_id'">
-					{{ record.package ? record.package.name : '' }}
+					<a-tooltip>
+						<template #title
+							v-if="record.package && record.package.template && record.package.template.length > 0">
+							<div v-for="(tmp, tmp_index) in record.package.template" :key="tmp_index">
+								- {{ tmp.name }}
+							</div>
+						</template>
+						<span class="tw-cursor-pointer">
+							{{ record.package ? record.package.name : '' }}
+						</span>
+					</a-tooltip>
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>
+						<a-button @click="showDocumentDrawer(record.rd)" size="small">Маягт</a-button>
 						<a-button @click="showAddDrawer(record)" size="small">Засварлах</a-button>
 						<a-popconfirm title="Үйлчлүүлэгч устгах гэж байна?" ok-text="Тийм" cancel-text="Үгүй"
 							@confirm="deletePatient(record.id)">

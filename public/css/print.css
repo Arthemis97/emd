@@ -1,0 +1,9 @@
+@media print {
+    * {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .pageBreak {
+        display: none;
+    }
+}

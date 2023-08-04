@@ -37,17 +37,6 @@ const routes = [
             layout: "AdminLayout",
         },
     },
-    {
-        name: "document",
-        path: "/document/:id",
-        component: () => import("./pages/document.vue"),
-        props: true,
-        meta: {
-            requiresAuth: true,
-            admin: true,
-            layout: "AdminLayout",
-        },
-    },
 
     {
         path: "/:catchAll(.*)",

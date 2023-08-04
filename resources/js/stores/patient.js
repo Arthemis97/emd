@@ -14,7 +14,9 @@ const usePatientStore = defineStore("patient", {
     },
     actions: {
         async fetchPatients(filters) {
-            const params = new URLSearchParams(filters).toString();
+            const params = new URLSearchParams(
+                removeNullProperties(filters)
+            ).toString();
             const pgn = new URLSearchParams({
                 page: this.pagination.current,
                 pageSize: this.pagination.pageSize,

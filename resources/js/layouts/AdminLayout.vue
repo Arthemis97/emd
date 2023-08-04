@@ -1,10 +1,12 @@
 <script>
 import UserDrawer from '../components/Drawer/User.vue'
 import PatientDrawer from '../components/Drawer/Patient.vue'
+import DocumentDrawer from '../components/Drawer/Document.vue'
 import ImageModal from '../components/Modals/Image.vue'
 import BlankModal from '../components/Modals/Blank.vue'
 import PackageModal from '../components/Modals/Package.vue'
 import TemplateModal from '../components/Modals/Template.vue'
+import ViewModal from '../components/Modals/View.vue'
 import Blank from '../components/Blank.vue'
 export default {
 	name: 'AdminLayout',
@@ -15,7 +17,9 @@ export default {
 		Blank,
 		BlankModal,
 		PackageModal,
-		TemplateModal
+		TemplateModal,
+		ViewModal,
+		DocumentDrawer
 	}
 }
 </script>
@@ -34,5 +38,7 @@ export default {
 	<BlankModal />
 	<PackageModal />
 	<TemplateModal />
+	<ViewModal />
+	<DocumentDrawer />
 </template>
 
