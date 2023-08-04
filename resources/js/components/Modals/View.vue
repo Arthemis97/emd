@@ -110,7 +110,7 @@ useEvent.on('modal:view:open', async (ids) => {
         <template #title>
             <a-space>
                 <a-button type="primary" v-print="printObj">Хэвлэх</a-button>
-                <a-button type="primary" @click="savePdf">Хэвлэх</a-button>
+                <a-button type="primary" @click="savePdf">Хэвлэх Backendasdads</a-button>
                 <a ref="downloadLink" style="display: none;"></a>
             </a-space>
         </template>
