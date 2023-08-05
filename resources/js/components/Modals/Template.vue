@@ -87,6 +87,11 @@ const save = async () => {
     }
 }
 
+const getPackageOptions = () => {
+    const opts = getPackages.value.map((i) => ({ label: i.name, value: i.id }))
+    return opts
+}
+
 const handleFileChange = async (e) => {
     const file = e.target.files[0];
   if (!file) {
@@ -118,7 +123,7 @@ const handleFileChange = async (e) => {
                     <a-col :span="12">
                         <a-form-item label="Маягтын багц">
                             <a-select v-model:value="template.package" mode="multiple" placeholder="Сонгох"
-                                :options="getPackages.map((i) => ({ label: i.name, value: i.id }))" />
+                                :options="getPackageOptions()" />
                         </a-form-item>
                     </a-col>
                     <a-col :span=4>

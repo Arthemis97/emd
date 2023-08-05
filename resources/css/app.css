@@ -19,10 +19,10 @@ body {
 .ant-card-small > .ant-card-body {
     /* padding: 4px; */
 }
-.ant-modal-wrap {
-    z-index: 9999 !important;
-}
+/* .ant-modal-wrap {
+    z-index: 1000 !important;
+} */
 
-.ant-image-preview-root .ant-image-preview-wrap {
+/* .ant-image-preview-root .ant-image-preview-wrap {
     z-index: 10000 !important;
-}
+} */

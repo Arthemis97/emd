@@ -66,7 +66,8 @@ const afterClose = () => {
 }
 </script>
 <template>
-	<a-modal v-model:open="visible" :footer="null" :destroyOnClose="true" @afterClose="afterClose">
+	<a-modal v-model:open="visible" :footer="null" :destroyOnClose="true" @afterClose="afterClose"
+		wrapClassName="tw-z-[10000]">
 		<div class="tw-pt-6">
 			<a-space class="tw-mb-2">
 				<a-input type="file" @change="handleImage"></a-input>
