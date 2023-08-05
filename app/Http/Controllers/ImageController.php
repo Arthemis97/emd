@@ -43,13 +43,8 @@ class ImageController extends Controller
         $path = public_path("images/$id");
         !is_dir($path) &&
             mkdir($path, 0777, true);
-        $name = date('Y-m-d H:i:s') . '.' . $request->image->extension();
-        $request->image->move(public_path('images/' . $id), $name);
-        // $request->image->storeAs('public/images/' . $id, $name);
-
-        // ResizeImage::make($request->file('image'))
-        //     // ->resize(100, 100)
-        //     ->save($path . '/' . $name);
+        $name = date('YmdHis') . '.' . $request->image->extension();
+        $request->image->move(public_path('/images/' . $id), $name);
 
         $image = new Image();
         $image->path = $name;
