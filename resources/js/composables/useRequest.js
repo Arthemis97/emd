@@ -1,6 +1,7 @@
 import { message } from "ant-design-vue";
 import useAuthStore from "../stores/auth";
-const BASE_API_URL = "http://localhost:8000/api";
+const apiurl = import.meta.env.VITE_API_URL;
+const BASE_API_URL = `${apiurl}/api`;
 
 const useRequest = {
     async get(url) {

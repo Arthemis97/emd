@@ -1,3 +1,4 @@
+const apiurl = import.meta.env.VITE_API_URL;
 export const removeNullProperties = (obj) => {
     const newObj = {};
     for (const key in obj) {
@@ -7,7 +8,7 @@ export const removeNullProperties = (obj) => {
     }
     return newObj;
 };
-export const getImage = (image) => "http://localhost:8000/docimages/" + image;
+export const getImage = (image) => `${apiurl}/docimages/${image}`;
 export const isBase64Image = (str) => {
     return str ? str.startsWith("data:image/") : str;
     // if (!str.startsWith("data:image/")) {
