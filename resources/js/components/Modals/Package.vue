@@ -35,10 +35,10 @@ const afterClose = async () => {
 <template>
 	<a-modal v-model:open="visible">
 		<a-space class="tw-mb-3">
-			<a-dropdown :trigger="['click']" :open="addVisible" @afterClose="afterClose()">
+			<a-dropdown :trigger="['click']" :open="addVisible" @afterClose="afterClose()" style="z-index: 10000">
 				<a-button size="small" @click="addVisible = !addVisible">Нэмэх</a-button>
 				<template #overlay>
-					<div class="tw-shadow tw-w-52 tw-py-2 tw-px-3 tw-bg-white" style="z-index: 10000">
+					<div class="tw-shadow tw-w-52 tw-py-2 tw-px-3 tw-bg-white">
 						<a-form layout="vertical">
 							<a-form-item label="Нэр">
 								<a-input v-model:value="pkg.name" />

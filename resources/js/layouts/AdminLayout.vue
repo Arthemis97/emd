@@ -27,9 +27,9 @@ export default {
 </script>
 <template>
 	<div class="tw-h-screen tw-flex">
-		<div class="tw-w-80 tw-bg-blue-500">
-			<!-- <Blank /> -->
-		</div>
+		<!-- <div class="tw-w-80 tw-bg-blue-500">
+			<Blank />
+		</div> -->
 		<div class="tw-flex-1 tw-bg-slate-100 tw-overflow-auto">
 			<slot></slot>
 		</div>
