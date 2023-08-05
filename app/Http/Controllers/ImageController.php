@@ -34,7 +34,7 @@ class ImageController extends Controller
     public function store(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,bmp|max:10240',
         ]);
 
         if ($validator->fails()) {
