@@ -18,6 +18,7 @@ const toPrint = ref([])
 const filterString = ref("")
 const patient = ref({})
 const templates = ref([])
+const images = ref([])
 
 useEvent.on('drawer:document:open', (register) => {
 	rd.value = register
@@ -26,6 +27,10 @@ useEvent.on('drawer:document:open', (register) => {
 
 useEvent.on('dropdown:hide', () => {
 	addVisible.value = false
+})
+
+useEvent.on('document:images:received', (imgs) => {
+	images.value = imgs
 })
 
 const onSearch = async () => {
@@ -42,7 +47,8 @@ const handleTemplateChange = (e) => {
 	useEvent.emit('document:data:pass', {
 		template: tmp.template,
 		template_id: e,
-		patient_id: patient.value.id
+		patient_id: patient.value.id,
+		patient: patient.value
 	})
 }
 
@@ -72,7 +78,11 @@ const showViewModal = () => {
 	const template_ids = getPatientDocuments.value
 	.filter((i) => toPrint.value.includes(i.id))
 	.map((i) => i.id);
-	useEvent.emit('modal:view:open', template_ids)
+	useEvent.emit('modal:view:open', {ids: template_ids, images: images.value})
+}
+
+const showImages = () => {
+	useEvent.emit('modal:image:adding', {patientId: patient.value.id, isAdding: true})
 }
 
 const handlePrintCheckbox = (e, id) => {
@@ -91,6 +101,10 @@ const handlePrintCheckbox = (e, id) => {
 const isPrintChecked = (id) => {
 	const index = toPrint.value.findIndex(i => i == id)
 	return index !== -1
+}
+
+const deleteImage = (index) => {
+	images.value.splice(index, 1)
 }
 
 const deleteDocument = async (id) => {
@@ -122,6 +136,16 @@ const changeOrder = (index, dir) => {
 				</div>
 			</div>
 		</template>
+		<template #extra>
+			<a-dropdown :trigger="['click']">
+				<a-button type="primary" size="small">Загвар</a-button>
+				<template #overlay>
+					<div class="tw-bg-gray-200 tw-shadow-xl tw-border tw-w-96">
+						<Blank />
+					</div>
+				</template>
+			</a-dropdown>
+		</template>
 		<a-row :gutter="16">
 			<a-col :span="10">
 				<a-card size="small">
@@ -140,7 +164,7 @@ const changeOrder = (index, dir) => {
 											маягтууд</a-button>
 										<template #overlay>
 											<div
-												class="tw-flex tw-space-y-2 tw-flex-col tw-bg-white tw-shadow tw-w-[600px] tw-h-[400px] tw-p-4">
+												class="tw-flex tw-space-y-2 tw-flex-col tw-bg-white tw-shadow tw-w-[600px] tw-p-4">
 												<div>
 													<a-input placeholder="Хайх" v-model:value="filterString" />
 												</div>
@@ -198,8 +222,22 @@ const changeOrder = (index, dir) => {
 														</a-list>
 													</perfect-scrollbar>
 												</div>
+												<div class="tw-shadow tw-grid tw-grid-cols-4 tw-gap-2 tw-p-2">
+													<div v-for="(img, img_index) in images" :key="img_index"
+														class="tw-relative tw-group tw-border">
+														<div
+															class="tw-absolute tw-w-full tw-h-full tw-bg-black tw-hidden tw-bg-opacity-50 group-hover:tw-flex tw-items-center tw-justify-center">
+															<div class="tw-flex tw-flex-col tw-space-y-2">
+																<a-button size="small" danger
+																	@click="deleteImage(img_index)">Хасах</a-button>
+															</div>
+														</div>
+														<img :src="img" class="tw-w-full tw-h-20 tw-object-cover" />
+													</div>
+												</div>
 												<a-space>
 													<a-button type="primary" @click="showViewModal">Хэвлэх</a-button>
+													<a-button type="primary" @click="showImages">Зураг хавсаргах</a-button>
 													<a-button type="primary"
 														@click="addVisible = !addVisible">Хаах</a-button>
 												</a-space>

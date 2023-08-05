@@ -7,6 +7,7 @@ import BlankModal from '../components/Modals/Blank.vue'
 import PackageModal from '../components/Modals/Package.vue'
 import TemplateModal from '../components/Modals/Template.vue'
 import ViewModal from '../components/Modals/View.vue'
+import PdfModal from '../components/Modals/pdf.vue'
 import Blank from '../components/Blank.vue'
 export default {
 	name: 'AdminLayout',
@@ -19,14 +20,15 @@ export default {
 		PackageModal,
 		TemplateModal,
 		ViewModal,
-		DocumentDrawer
+		DocumentDrawer,
+		PdfModal
 	}
 }
 </script>
 <template>
 	<div class="tw-h-screen tw-flex">
 		<div class="tw-w-80 tw-bg-blue-500">
-			<Blank />
+			<!-- <Blank /> -->
 		</div>
 		<div class="tw-flex-1 tw-bg-slate-100 tw-overflow-auto">
 			<slot></slot>
@@ -40,5 +42,6 @@ export default {
 	<TemplateModal />
 	<ViewModal />
 	<DocumentDrawer />
+	<PdfModal />
 </template>
 

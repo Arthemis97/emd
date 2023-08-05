@@ -7,17 +7,19 @@ import CheckboxElement from './Elements/Checkbox.vue';
 import RoundElement from './Elements/Round.vue';
 import UnderlineElement from './Elements/Underline.vue';
 import SelectElement from './Elements/Select.vue';
+import SumElement from './Elements/Sum.vue';
 
 const documentStore = useDocumentStore()
 const elements = ref([])
 const data = ref({})
 const patient_id = ref(null)
+const patient = ref({})
 const template_id = ref(null)
 
 
 const groupElements = computed(() => {
 	const cb = elements.value.filter(i => ['Underline','Round','Checkbox','Bold'].includes(i.type))
-	const inputs = elements.value.filter(i => ['InputElement','Select'].includes(i.type))
+	const inputs = elements.value.filter(i => ['InputElement','Select', 'Sum'].includes(i.type))
 	const images = elements.value.filter(i => ['Image'].includes(i.type))
 	return {cb, inputs, images}
 })
@@ -33,6 +35,7 @@ useEvent.on('document:data:pass', (obj) => {
 	elements.value = []
 	if(obj.template && obj.template.length > 0) {
 		patient_id.value = obj.patient_id
+		patient.value = obj.patient
 		template_id.value = obj.template_id
 		const templateData = JSON.parse(obj.template)[0]
 		const regex = /{[^{}]*}/g;
@@ -45,7 +48,8 @@ useEvent.on('document:data:pass', (obj) => {
 					type: getType(matchArr[0]),
 					label: matchArr[2],
 					value: '',
-					model: matchArr[1]
+					model: matchArr[1],
+					sums: ''
 				}
 				switch (matchArr[0]) {
 					case "z":
@@ -61,15 +65,47 @@ useEvent.on('document:data:pass', (obj) => {
 					case "s":
 						elToPush.options = matchArr[3]
 						break;
+					case "sum":
+						elToPush.sums = matchArr[3]
+						break;
 					default:
 						break;
 				}
 				elements.value.push(elToPush)
 				data.value[matchArr[1]] = elToPush
+				autoFill(matchArr[1])
 			});
 		}
 	}
 })
+
+const autoFill = (model) => {
+	if(data.value[model]){
+		switch(model) {
+			case 'LName':
+				data.value[model].value = patient.value.last_name;
+			  break;
+			case 'FName': 
+				data.value[model].value = patient.value.first_name;
+			  break;
+			case 'Age': 
+				data.value[model].value = patient.value.age;
+			  break;
+			case 'Sex':
+				data.value[model].value = patient.value.gender ? 'Эр' : 'Эм';
+			  break;
+			case 'Rd':
+				data.value[model].value = patient.value.rd;
+			  break;
+			case 'male':
+				data.value[model].value = patient.value.gender;
+			  break;
+			case 'female':
+				data.value[model].value = !patient.value.gender;
+			  break;
+		}
+	}
+}
 
 const getType = (t) => {
 	switch (t) {
@@ -87,6 +123,8 @@ const getType = (t) => {
 			return 'Checkbox'
 		case 's':
 			return 'Select'
+		case 'sum':
+			return 'Sum'
 		default:
 			break;
 	}
@@ -96,6 +134,9 @@ watch(
     () => data,
     (value, oldValue) => {
 		useEvent.emit('preview:data:pass', value.value)
+		// if (value.value['S11'] == oldValue.value['S11']) {
+		// 	useEvent.emit('sum:data:pass', value.value)
+		// }
     }, {deep: true}
 )
 
@@ -126,6 +167,8 @@ const save = async () => {
 								:propperties="el" :key="`iel_index${el_index}`" />
 							<SelectElement v-model:modelValue="data[el.model]" v-if="el.type == 'Select'" :propperties="el"
 								:key="`iel_index${el_index}`" />
+							<SumElement v-model:modelValue="data[el.model]" v-if="el.type == 'Sum'" :propperties="el"
+								:docdata="data" :key="`iel_index${el_index}`" />
 						</a-card>
 					</template>
 				</div>

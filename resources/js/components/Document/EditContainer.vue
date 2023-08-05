@@ -9,6 +9,7 @@ import CheckboxElement from './Elements/Checkbox.vue';
 import RoundElement from './Elements/Round.vue';
 import UnderlineElement from './Elements/Underline.vue';
 import SelectElement from './Elements/Select.vue';
+import SumElement from './Elements/Sum.vue';
 
 const documentStore = useDocumentStore()
 const templateStore = useTemplateStore()
@@ -20,7 +21,7 @@ const title = ref("")
 
 const groupElements = computed(() => {
 	const cb = elements.value.filter(i => ['Underline','Round','Checkbox','Bold'].includes(i.type))
-	const inputs = elements.value.filter(i => ['InputElement','Select'].includes(i.type))
+	const inputs = elements.value.filter(i => ['InputElement','Select', 'Sum'].includes(i.type))
 	const images = elements.value.filter(i => ['Image'].includes(i.type))
 	return {cb, inputs, images}
 })
@@ -65,6 +66,9 @@ useEvent.on('documentedit:data:pass', async (obj) => {
 				case "s":
 					elToPush.options = matchArr[3]
 					break;
+				case "sum":
+					elToPush.sums = matchArr[3]
+					break;
 				default:
 					break;
 			}
@@ -100,6 +104,8 @@ const getType = (t) => {
 			return 'Checkbox'
 		case 's':
 			return 'Select'
+		case 'sum':
+			return 'Sum'
 		default:
 			break;
 	}
@@ -130,6 +136,8 @@ const save = async () => {
 								:propperties="el" :key="`iel_index${el_index}`" />
 							<SelectElement v-model:modelValue="data[el.model]" v-if="el.type == 'Select'" :propperties="el"
 								:key="`iel_index${el_index}`" />
+							<SumElement v-model:modelValue="data[el.model]" v-if="el.type == 'Sum'" :propperties="el"
+								:docdata="data" :key="`iel_index${el_index}`" />
 						</a-card>
 					</template>
 				</div>

@@ -55,6 +55,9 @@ useEvent.on("preview:data:pass", async (data) => {
                     case "Select":
                         element.textContent = data[i].value;
                         break;
+                    case "Sum":
+                        element.textContent = data[i].value;                      
+                        break;
                     default:
                         break;
                 }
@@ -197,5 +200,5 @@ useEvent.on("preview:html:pass", async (obj) => {
 });
 </script>
 <template>
-	<div v-html="htmldata"></div>
+    <div v-html="htmldata"></div>
 </template>

@@ -11,6 +11,7 @@ const {getPackages} = storeToRefs(packageStore)
 const visible = ref(false)
 const printContent = ref("")
 const downloadLink = ref("")
+const images = ref([])
 const template = ref({
     content: [],
 })
@@ -46,12 +47,14 @@ const downloadPdf = (pdfData, filename) => {
 
 const savePdf = async () => {
     const resp = await documentStore.getPDF(template.value.content)
-    downloadPdf(resp.data, 'Test')
+    // downloadPdf(resp.data, 'Test')
+    useEvent.emit('modal:pdf:open', {})
 }
 
 
-useEvent.on('modal:view:open', async (ids) => {
-    const promises = ids.map(async (id) => {
+useEvent.on('modal:view:open', async (idsWithImages) => {
+    images.value = idsWithImages.images
+    const promises = idsWithImages.ids.map(async (id) => {
         try {
             const documentResp = await documentStore.fetchDocumentsById(id);
             const templateResp = await templateStore.getTemplate(documentResp.template_id);
@@ -110,7 +113,7 @@ useEvent.on('modal:view:open', async (ids) => {
         <template #title>
             <a-space>
                 <a-button type="primary" v-print="printObj">Хэвлэх</a-button>
-                <a-button type="primary" @click="savePdf">Хэвлэх Backendasdads</a-button>
+                <!-- <a-button type="primary" @click="savePdf">Хэвлэх Backendasdads</a-button> -->
                 <a ref="downloadLink" style="display: none;"></a>
             </a-space>
         </template>
@@ -123,6 +126,10 @@ useEvent.on('modal:view:open', async (ids) => {
                     <div style="width: 210mm; height: auto; padding: 10mm 15mm; margin: 0 auto; box-sizing: border-box; page-break-inside: avoid;"
                         v-html="html" class="tw-bg-white">
                     </div>
+                    <hr class="pageBreak tw-w-full">
+                </template>
+                <template v-for="img in images" :key="img">
+                    <img :src="img" class="tw-w-full tw-max-h-[297mm]" />
                     <hr class="pageBreak tw-w-full">
                 </template>
             </div>
