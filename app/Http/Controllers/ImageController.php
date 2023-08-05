@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image as ResizeImage;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
@@ -43,9 +44,11 @@ class ImageController extends Controller
         !is_dir($path) &&
             mkdir($path, 0777, true);
         $name = date('Y-m-d H:i:s') . '.' . $request->image->extension();
-        ResizeImage::make($request->file('image'))
-            // ->resize(100, 100)
-            ->save($path . '/' . $name);
+        $request->image->storeAs('public/images/' . $id, $name);
+
+        // ResizeImage::make($request->file('image'))
+        //     // ->resize(100, 100)
+        //     ->save($path . '/' . $name);
 
         $image = new Image();
         $image->path = $name;

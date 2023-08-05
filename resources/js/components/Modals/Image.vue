@@ -21,10 +21,10 @@ const handleImage = (e) => {
 }
 
 const handleCheck = (e, img) => {
-  const index = selected.value.findIndex((item) => item === `/images/${img.patient_id}/${img.path}`);
+  const index = selected.value.findIndex((item) => item === `/storage/images/${img.patient_id}/${img.path}`);
   if (e.target.checked) {
     if (index === -1) {
-      selected.value.push(`/images/${img.patient_id}/${img.path}`);
+      selected.value.push(`/storage/images/${img.patient_id}/${img.path}`);
     }
   } else {
     if (index !== -1) {
@@ -82,7 +82,7 @@ const afterClose = () => {
 							<a-button size="small" danger @click="deleteImage(img.id)">Устгах</a-button>
 						</div>
 					</div>
-					<img :src="`/images/${img.patient_id}/${img.path}`" class="tw-w-full tw-h-20 tw-object-cover" />
+					<img :src="`/storage/images/${img.patient_id}/${img.path}`" class="tw-w-full tw-h-20 tw-object-cover" />
 					<a-checkbox v-if="isAdding" class="tw-absolute tw-left-1 tw-top-1"
 						@change="handleCheck($event, img)"></a-checkbox>
 				</div>
