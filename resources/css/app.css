@@ -23,6 +23,21 @@ body {
     z-index: 1000 !important;
 } */
 
-/* .ant-image-preview-root .ant-image-preview-wrap {
+.ant-image-preview-root .ant-image-preview-wrap {
     z-index: 10000 !important;
-} */
+}
+
+@media print {
+    * {
+        line-height: 5mm !important;
+    }
+    .pageBreak {
+        display: none !important;
+        page-break-after: always !important;
+        height: 0 !important;
+        clear: both !important;
+    }
+    table {
+        width: 100% !important;
+    }
+}

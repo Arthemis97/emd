@@ -27,7 +27,13 @@ class PatientController extends Controller
             $query->where('rd', 'like', '%' . $request->input('rd') . '%');
         }
 
-        $patients = $query->paginate($request->get('pageSize'));
+        if ($request->has('date')) {
+            $start = explode(',', $request->input('date'))[0];
+            $end = explode(',', $request->input('date'))[1];
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $patients = $query->orderBy('created_at', 'desc')->paginate($request->get('pageSize'));
 
         return response()->json($patients);
     }

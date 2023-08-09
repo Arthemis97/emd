@@ -1,9 +1,11 @@
 <script setup>
 import { useHead } from 'unhead'
+import { useDate } from 'vue3-dayjs-plugin/useDate'
 import { FileDoneOutlined, FormOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import usePatientStore from '../stores/patient'
 import Topbar from '../components/Topbar.vue'
 const router = useRouter()
+const date = useDate()
 useHead({
     title: 'Үйлчлүүлэгч',
 })
@@ -80,6 +82,21 @@ const columns = [{
   dataIndex: 'image',
   width: '5%'
 }, {
+	title: 'Огноо',
+	dataIndex: 'date',
+	width: '8%',
+	customFilterDropdown: true,
+	onFilter: (value, record) => {
+		return true;
+	},
+	onFilterDropdownOpenChange: visible => {
+		if (visible) {
+		setTimeout(() => {
+			searchInput.value.focus();
+		}, 100);
+	}
+  }
+}, {
   title: '',
   dataIndex: 'action',
   width: '14%'
@@ -145,10 +162,18 @@ onMounted(() => {
 			:pagination="getPagination" :loading="loading" @change="handleTableChange">
 			<template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
 				<div style="padding: 8px">
-					<a-input ref="searchInput" :placeholder="`Хайх`" :value="selectedKeys[0]"
-						style="width: 188px; margin-bottom: 8px; display: block"
-						@change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-						@pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)" />
+					<div v-if="column.dataIndex === 'date'" class="tw-mb-2">
+						<a-range-picker :value="selectedKeys[0]" ref="searchInput" valueFormat="YYYY-MM-DD"
+							:placeholder="['Эхлэх огноо', 'Дуусах огноо']" @change="e => setSelectedKeys(e ? [e] : [])"
+							class="tw-w-full" @pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)" />
+					</div>
+					<template v-else>
+						<a-input ref="searchInput" :placeholder="`Хайх`" :value="selectedKeys[0]"
+							style="width: 188px; margin-bottom: 8px; display: block"
+							@change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+							@pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)" />
+					</template>
+
 					<a-button type="primary" size="small" style="width: 90px; margin-right: 8px"
 						@click="handleSearch(selectedKeys, confirm, column.dataIndex)">
 						<template #icon>
@@ -179,6 +204,9 @@ onMounted(() => {
 				</template>
 				<template v-if="column.dataIndex === 'gender'">
 					{{ record.gender ? 'Эр' : 'Эм' }}
+				</template>
+				<template v-if="column.dataIndex === 'date'">
+					{{ date(record.created_at).format('YYYY-MM-DD HH:mm') }}
 				</template>
 				<template v-if="column.dataIndex === 'package_id'">
 					<a-tooltip>

@@ -5,7 +5,7 @@ const usePatientStore = defineStore("patient", {
         patients: [],
         pagination: {
             current: 1,
-            pageSize: 2,
+            pageSize: 20,
         },
     }),
     getters: {
@@ -43,7 +43,7 @@ const usePatientStore = defineStore("patient", {
             const resp = await useRequest.post("/patients", tempdata);
             if (resp.resp.status === 200) {
                 message.success(resp.data?.message || "Ажилтан нэмэгдлээ");
-                this.patients = [...this.patients, resp.data.patient];
+                this.patients = [resp.data.patient, ...this.patients];
             } else {
                 message.error(resp.data?.message || "Алдаа гарлаа");
             }

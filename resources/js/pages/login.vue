@@ -6,8 +6,8 @@ import { useHead } from 'unhead'
 
 const authStore = useAuthStore()
 const router = useRouter();
-const phone = ref('99101010')
-const password = ref('123')
+const phone = ref('')
+const password = ref('')
 const loading = ref(false)
 
 useHead({

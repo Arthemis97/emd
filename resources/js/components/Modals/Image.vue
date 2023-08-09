@@ -45,7 +45,7 @@ const uploadImage = async () => {
 
 const fetchImages = async () => {
 	const resp = await useRequest.get(`/images/${patientId.value}`)
-	images.value = resp.data.images
+	images.value = resp.data.images.map((i) => ({...i, ...{visible: false}}))
 }
 
 const deleteImage = async (id) => {
@@ -67,7 +67,7 @@ const afterClose = () => {
 </script>
 <template>
 	<a-modal v-model:open="visible" :footer="null" :destroyOnClose="true" @afterClose="afterClose"
-		wrapClassName="tw-z-[10000]">
+		wrapClassName="tw-z-[9999]">
 		<div class="tw-pt-6">
 			<a-space class="tw-mb-2">
 				<a-input type="file" @change="handleImage"></a-input>
@@ -79,10 +79,15 @@ const afterClose = () => {
 					<div
 						class="tw-absolute tw-w-full tw-h-full tw-bg-black tw-hidden tw-bg-opacity-50 group-hover:tw-flex tw-items-center tw-justify-center">
 						<div class="tw-flex tw-flex-col tw-space-y-2">
+							<a-button type="primary" @click="() => img.visible = true">Харах</a-button>
 							<a-button size="small" danger @click="deleteImage(img.id)">Устгах</a-button>
 						</div>
 					</div>
 					<img :src="`/images/${img.patient_id}/${img.path}`" class="tw-w-full tw-h-20 tw-object-cover" />
+					<a-image :width="200" :style="{ display: 'none' }" :preview="{
+						visible: img.visible,
+						onVisibleChange: (val) => img.visible = val,
+					}" :src="`/images/${img.patient_id}/${img.path}`" />
 					<a-checkbox v-if="isAdding" class="tw-absolute tw-left-1 tw-top-1"
 						@change="handleCheck($event, img)"></a-checkbox>
 				</div>

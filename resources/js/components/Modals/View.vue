@@ -19,6 +19,7 @@ const display = ref("vertical")
 const printObj = {
     id: "printContent",
     popTitle: 'print',
+    extraCss: "http://localhost:8000/css/print.css",
     beforeOpenCallback(vue) {
     },
     openCallback(vue) {
@@ -47,7 +48,7 @@ const downloadPdf = (pdfData, filename) => {
 
 const savePdf = async () => {
     const resp = await documentStore.getPDF(template.value.content)
-    // downloadPdf(resp.data, 'Test')
+    downloadPdf(resp.data, 'Test')
     useEvent.emit('modal:pdf:open', {})
 }
 
@@ -113,7 +114,7 @@ useEvent.on('modal:view:open', async (idsWithImages) => {
         <template #title>
             <a-space>
                 <a-button type="primary" v-print="printObj">Хэвлэх</a-button>
-                <!-- <a-button type="primary" @click="savePdf">Хэвлэх Backendasdads</a-button> -->
+                <a-button type="primary" @click="savePdf">Хэвлэх Backendasdads</a-button>
                 <a ref="downloadLink" style="display: none;"></a>
             </a-space>
         </template>
@@ -129,18 +130,10 @@ useEvent.on('modal:view:open', async (idsWithImages) => {
                     <hr class="pageBreak tw-w-full">
                 </template>
                 <template v-for="img in images" :key="img">
-                    <img :src="img" class="tw-w-full tw-max-h-[297mm]" />
+                    <img :src="img" class="tw-max-w-full tw-max-h-[297mm]" />
                     <hr class="pageBreak tw-w-full">
                 </template>
             </div>
         </div>
     </a-modal>
 </template>
-
-<style>
-@media print {
-    .pageBreak {
-        display: none;
-    }
-}
-</style>

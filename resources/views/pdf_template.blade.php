@@ -9,9 +9,21 @@
 			margin: 0;
 		}
 
-		body {
-			font-family: DejaVu Sans, serif;
-			margin: 20px;
+		@media print {
+			* {
+				line-height: 5mm !important;
+			}
+
+			.pageBreak {
+				display: none !important;
+				page-break-after: always !important;
+				height: 0 !important;
+				clear: both !important;
+			}
+
+			table {
+				width: 100% !important;
+			}
 		}
 	</style>
 </head>

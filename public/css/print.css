@@ -1,9 +1,14 @@
 @media print {
     * {
-        padding: 0 !important;
-        margin: 0 !important;
+        line-height: 5mm !important;
     }
     .pageBreak {
-        display: none;
+        display: none !important;
+        page-break-after: always !important;
+        height: 0 !important;
+        clear: both !important;
+    }
+    table {
+        width: 100% !important;
     }
 }

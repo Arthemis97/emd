@@ -10,7 +10,7 @@ class Patient extends Model
     use HasFactory;
 
     protected $table = 'patient';
-    protected $fillable = ['first_name', 'last_name', 'gender', 'dob', 'age', 'rd', 'package_id'];
+    protected $fillable = ['first_name', 'last_name', 'gender', 'dob', 'age', 'rd', 'package_id', 'story'];
 
 
     public function package()
