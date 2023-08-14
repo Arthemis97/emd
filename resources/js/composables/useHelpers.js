@@ -8,7 +8,29 @@ export const removeNullProperties = (obj) => {
     }
     return newObj;
 };
+
+export const imageUrlToBase64 = async (imageUrl) => {
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+
+        return new Promise((resolve, reject) => {
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+
+            reader.onerror = reject;
+
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error("Error converting image to Base64:", error);
+        throw error;
+    }
+};
 export const getImage = (image) => `${apiurl}/docimages/${image}`;
+export const getPicture = (image) => `${apiurl}${image}`;
 export const isBase64Image = (str) => {
     return str ? str.startsWith("data:image/") : str;
     // if (!str.startsWith("data:image/")) {

@@ -1,4 +1,5 @@
 <script setup>
+import html2pdf from "html2pdf.js"
 import usePackageStore from '../../stores/package'
 import useTemplateStore from "../../stores/template"
 import useDocumentStore from "../../stores/document"
@@ -9,58 +10,99 @@ const documentStore = useDocumentStore()
 const {getPackages} = storeToRefs(packageStore)
 
 const visible = ref(false)
+const patient = ref({})
+const loading = ref(false)
 const printContent = ref("")
 const downloadLink = ref("")
+const fileInput = ref("")
 const images = ref([])
 const template = ref({
     content: [],
 })
-const display = ref("vertical")
-const printObj = {
-    id: "printContent",
-    popTitle: 'print',
-    extraCss: "http://localhost:8000/css/print.css",
-    beforeOpenCallback(vue) {
-    },
-    openCallback(vue) {
-    },
-    closeCallback(vue) {
+const printDoc = async () => {
+    loading.value = true
+    const formData = new FormData();
+    const timestamp = new Date().getTime(); 
+    const randomPart = Math.floor(Math.random() * 10000); 
+    const uniqueId = `${timestamp}${randomPart}`;
+    for (const html of template.value.content) {
+        formData.append('html[]', html);
     }
+    for (const img of images.value) {
+        const base64 = await imageUrlToBase64(getPicture(img))
+        formData.append('html[]', `<img style="max-width: 100%;" src="${base64}" />`);
+    }
+    formData.append('temp', uniqueId);
+
+    const response = await fetch('http://localhost:4000/generate', {
+        method: 'POST',
+        body: formData
+      });
+      
+    const resp = await response.json()
+    const byteNumbersArray = resp.buffer.split(',').map(Number);
+    const uint8Array = new Uint8Array(byteNumbersArray);
+    const blob = new Blob([uint8Array], { type: 'application/pdf' });
+
+    const url = URL.createObjectURL(blob);
+    downloadLink.value.href = url;
+    downloadLink.value.download = `${patient.value.last_name} ${patient.value.first_name} - ${patient.value.rd}.pdf`;
+    downloadLink.value.click();
+    URL.revokeObjectURL(url);
+    loading.value = false
 }
 
-const downloadPdf = (pdfData, filename) => {
-     const byteCharacters = atob(pdfData);
-      const byteArrays = [];
-      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-        const slice = byteCharacters.slice(offset, offset + 512);
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
-      }
-      const blob = new Blob(byteArrays, { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      URL.revokeObjectURL(url);
+
+const fileSelected = async (e) => {
+    if(e.target.files.length == 0){
+        fileInput.value.value = null
+        return;
+    }
+    loading.value = true
+    const formData = new FormData();
+    const timestamp = new Date().getTime(); 
+    const randomPart = Math.floor(Math.random() * 10000); 
+    const uniqueId = `${timestamp}${randomPart}`;
+    for (const file of Array.from(e.target.files)) {
+        formData.append('files', file);
+    }
+    for (const html of template.value.content) {
+        formData.append('html[]', html);
+    }
+    for (const img of images.value) {
+        const base64 = await imageUrlToBase64(getPicture(img))
+        formData.append('html[]', `<img style="max-width: 100%;" src="${base64}" />`);
+    }
+    formData.append('temp', uniqueId);
+
+    const response = await fetch('http://localhost:4000/generate', {
+        method: 'POST',
+        body: formData
+      });
+      
+    const resp = await response.json()
+
+    useEvent.emit('modal:pdfpages:open', {images: resp.thumbnails, buffer: resp.buffer, patient: patient.value})
+    loading.value = false
 }
 
 const savePdf = async () => {
-    const resp = await documentStore.getPDF(template.value.content)
-    downloadPdf(resp.data, 'Test')
-    useEvent.emit('modal:pdf:open', {})
+    fileInput.value.click();
 }
 
+useEvent.on('view:input:reset', () => {
+    fileInput.value.value = null
+})
 
 useEvent.on('modal:view:open', async (idsWithImages) => {
     images.value = idsWithImages.images
-    const promises = idsWithImages.ids.map(async (id) => {
+    patient.value = idsWithImages.patient
+    const docsAndTemplates = await documentStore.getByIds(idsWithImages.ids);
+    
+    const promises = docsAndTemplates.document.map(async (document) => {
         try {
-            const documentResp = await documentStore.fetchDocumentsById(id);
-            const templateResp = await templateStore.getTemplate(documentResp.template_id);
-            let templateForView = JSON.parse(templateResp.template)[0];
-            const parsedData = JSON.parse(JSON.parse(documentResp.data));
+            let templateForView = document.template.template ? JSON.parse(document.template.template)[0] : '';
+            const parsedData = JSON.parse(JSON.parse(document.data));
             await Promise.all(
                 Object.keys(parsedData).map(async (i) => {
                     switch (parsedData[i].type) {
@@ -68,7 +110,7 @@ useEvent.on('modal:view:open', async (idsWithImages) => {
                             templateForView = templateForView.replace(parsedData[i].replace, parsedData[i].value);
                             break;
                         case 'Image':
-                            templateForView = templateForView.replace(parsedData[i].replace, `<img src="${isBase64Image(parsedData[i].src) ? parsedData[i].src : getImage(`${parsedData[i].src}.png`)}" />`);
+                            templateForView = templateForView.replace(parsedData[i].replace, `<img src="${isBase64Image(parsedData[i].src) ? parsedData[i].src : getImage(`${parsedData[i].src}.png`)}" style="${parsedData[i].width ? 'width: ' + parsedData[i].width + 'px' : ''}" />`);
                             break;
                         case 'Bold':
                             templateForView = templateForView.replace(parsedData[i].replace, parsedData[i].value ? `<b>${parsedData[i].content}</b>` : parsedData[i].content);
@@ -80,7 +122,7 @@ useEvent.on('modal:view:open', async (idsWithImages) => {
                             templateForView = templateForView.replace(parsedData[i].replace, parsedData[i].value ? `<u>${parsedData[i].content}</u>` : parsedData[i].content);
                             break;
                         case 'Checkbox':
-                            templateForView = templateForView.replace(parsedData[i].replace, parsedData[i].value ? `<span style="border: 1px solid #000; padding: 0 4px;">✓</span>` : '');
+                            templateForView = templateForView.replace(parsedData[i].replace, parsedData[i].value ? `<span style="border: 1px solid #000; width: 14px; height: 14px; display: inline-block; font-weight: bold; font-size: 12px; text-align: center;">✓</span>` : '');
                             break;
                         case 'Select':
                             templateForView = templateForView.replace(parsedData[i].replace, `${parsedData[i].value}`);
@@ -113,9 +155,11 @@ useEvent.on('modal:view:open', async (idsWithImages) => {
     <a-modal v-model:open="visible" width="215mm" :footer="null">
         <template #title>
             <a-space>
-                <a-button type="primary" v-print="printObj">Хэвлэх</a-button>
-                <a-button type="primary" @click="savePdf">Хэвлэх Backendasdads</a-button>
+                <a-button type="primary" @click="printDoc" :loading="loading">Хэвлэх</a-button>
+                <a-button type="primary" @click="savePdf" :loading="loading">Нэмэлт PDF</a-button>
                 <a ref="downloadLink" style="display: none;"></a>
+                <input ref="fileInput" style="display: none;" type="file" multiple accept="application/pdf"
+                    @change="fileSelected" />
             </a-space>
         </template>
         <div class="tw-text-xs tw-flex tw-justify-center">

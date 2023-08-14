@@ -13,7 +13,9 @@ class PatientController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Patient::query()->with('package.template');
+        $query = Patient::query()->with(['package.template' => function ($query) {
+            $query->select('name')->addSelect(['package_id']);
+        }]);
 
         if ($request->has('last_name')) {
             $query->where('last_name', 'like', '%' . $request->input('last_name') . '%');

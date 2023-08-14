@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use PDF;
+use Dompdf\Dompdf;
 
 class DocumentController extends Controller
 {
@@ -113,16 +114,41 @@ class DocumentController extends Controller
 
     public function getByPatient($id)
     {
-        $documents = Document::where('patient_id', $id)->with('template:id,name')->orderBy('created_at', 'desc')->get();
+        $documents = Document::where('patient_id', $id)
+            ->with('template:id,name')
+            ->whereHas('template', function ($query) {
+                $query->whereNotNull('id');
+            })
+            ->orderBy('created_at', 'desc')->get();
         return response()->json(['message' => 'Амжилттай', 'document' => $documents], 200);
     }
 
     public function getPDF(Request $request)
     {
         $data = $request->all();
-        $pdf = PDF::chunkLoadView('<html-separator/>', 'pdf_template', $data['html']);
-        $pdfContent = $pdf->output();
+        $html = '<html><head><meta charset="utf-8"></head><body style="font-family: Arial, sans-serif;">';
+        $dompdf = new Dompdf([
+            'defaultFont' => 'DejaVu Sans'
+        ]);
+        foreach ($data['html'] as $key => $value) {
+            $html = $html . $value;
+        }
+        $html = $html . '</body></html>';
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $pdfContent = $dompdf->output();
         $base64EncodedPDF = base64_encode($pdfContent);
         return response()->json(['message' => 'Амжилттай', 'data' => $base64EncodedPDF], 200);
+    }
+
+    public function getIds(Request $request)
+    {
+        $data = $request->all();
+        $documents = Document::whereIn('id', $data['ids'])->get();
+        foreach ($documents as $key => $value) {
+            $documents[$key]->template = Template::findOrFail($value->template_id);
+        }
+        return response()->json(['message' => 'Амжилттай', 'document' => $documents], 200);
     }
 }

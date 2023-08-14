@@ -19,7 +19,7 @@ const filterString = ref("")
 const patient = ref({})
 const templates = ref([])
 const images = ref([])
-
+const selectedTemplate = ref(null)
 useEvent.on('drawer:document:open', (register) => {
 	rd.value = register
 	onSearch()
@@ -61,6 +61,7 @@ const handleEditChange = (e) => {
 const tabChange = () => {
 	addVisible.value = false
 	toPrint.value = []
+	selectedTemplate.value = null
 	useEvent.emit('preview:html:remove')
 	useEvent.emit('documentedit:data:remove')
 	useEvent.emit('document:data:remove')
@@ -74,11 +75,15 @@ const filterOption = computed(() => {
 	return res
 })
 
+const selectAll = () => {
+	toPrint.value = getPatientDocuments.value.map(i => i.id)
+}
+
 const showViewModal = () => {
 	const template_ids = getPatientDocuments.value
 	.filter((i) => toPrint.value.includes(i.id))
 	.map((i) => i.id);
-	useEvent.emit('modal:view:open', {ids: template_ids, images: images.value})
+	useEvent.emit('modal:view:open', {ids: template_ids, images: images.value, patient: patient.value})
 }
 
 const showImages = () => {
@@ -147,122 +152,129 @@ const changeOrder = (index, dir) => {
 			</a-dropdown>
 		</template>
 		<a-row :gutter="16">
-			<a-col :span="10">
+			<a-col :span="12">
 				<a-card size="small">
 					<HTMLPreviewer />
 					<!-- <Blank /> -->
 				</a-card>
 			</a-col>
-			<a-col :span="14">
-				<a-card size="small">
-					<a-tabs @change="tabChange">
-						<a-tab-pane key="1" tab="Засварлах">
-							<Edit>
-								<template #button>
-									<a-dropdown :trigger="['click']" :open="addVisible">
-										<a-button type="primary" @click="addVisible = !addVisible">Бүртгэсэн
-											маягтууд</a-button>
-										<template #overlay>
-											<div
-												class="tw-flex tw-space-y-2 tw-flex-col tw-bg-white tw-shadow tw-w-[600px] tw-p-4">
-												<div>
-													<a-input placeholder="Хайх" v-model:value="filterString" />
-												</div>
-												<div class="tw-flex-1">
-													<perfect-scrollbar class="tw-h-[300px]">
-														<a-list size="small" bordered :data-source="filterOption">
-															<template #renderItem="{ item, index }">
-																<a-list-item>
-																	<div class="tw-flex tw-w-full tw-justify-between">
-																		<div class="tw-flex tw-flex-1 tw-space-x-1">
-																			<a-checkbox :checked="isPrintChecked(item.id)"
-																				class="tw-mr-2"
-																				@change="handlePrintCheckbox($event, item.id)" />
-																			<div>
-																				<a-button size="small"
-																					@click="changeOrder(index, true)">
-																					<template #icon>
-																						<UpOutlined />
-																					</template>
-																				</a-button>
-																				<a-button size="small"
-																					@click="changeOrder(index, false)">
-																					<template #icon>
-																						<DownOutlined />
-																					</template>
-																				</a-button>
-																			</div>
-																			<div><b>{{ item.template ? item.template.name :
-																				''
-																			}}</b> -
-																				{{ $date(item.created_at).format(`YYYY-MM-DD
-																				HH:mm`) }}</div>
-																		</div>
-																		<a-space>
-																			<a-button type="primary" size="small"
-																				@click="handleEditChange(item.id)">
-																				<template #icon>
-																					<EditOutlined />
-																				</template>
-																			</a-button>
-																			<a-popconfirm class="tw-z-[10000]"
-																				title="Устгах уу?" ok-text="Тийм"
-																				cancel-text="Үгүй"
-																				@confirm="deleteDocument(item.id)">
-																				<a-button danger size="small">
-																					<template #icon>
-																						<DeleteOutlined />
-																					</template>
-																				</a-button>
-																			</a-popconfirm>
-																		</a-space>
-																	</div>
-																</a-list-item>
-															</template>
-														</a-list>
-													</perfect-scrollbar>
-												</div>
-												<div class="tw-shadow tw-grid tw-grid-cols-4 tw-gap-2 tw-p-2">
-													<div v-for="(img, img_index) in images" :key="img_index"
-														class="tw-relative tw-group tw-border">
-														<div
-															class="tw-absolute tw-w-full tw-h-full tw-bg-black tw-hidden tw-bg-opacity-50 group-hover:tw-flex tw-items-center tw-justify-center">
-															<div class="tw-flex tw-flex-col tw-space-y-2">
-																<a-button size="small" danger
-																	@click="deleteImage(img_index)">Хасах</a-button>
-															</div>
-														</div>
-														<img :src="img" class="tw-w-full tw-h-20 tw-object-cover" />
+			<a-col :span="12">
+				<a-affix :offset-top="56">
+					<a-card size="small">
+						<a-tabs @change="tabChange">
+							<a-tab-pane key="1" tab="Засварлах">
+								<Edit>
+									<template #button>
+										<a-dropdown :trigger="['click']" :open="addVisible">
+											<a-button type="primary" @click="addVisible = !addVisible">Бүртгэсэн
+												маягтууд</a-button>
+											<template #overlay>
+												<div
+													class="tw-flex tw-space-y-2 tw-flex-col tw-bg-white tw-shadow tw-w-[600px] tw-p-4">
+													<div>
+														<a-input placeholder="Хайх" v-model:value="filterString" />
 													</div>
+													<div class="tw-flex-1">
+														<perfect-scrollbar class="tw-h-[300px]">
+															<a-list size="small" bordered :data-source="filterOption">
+																<template #renderItem="{ item, index }">
+																	<a-list-item>
+																		<div class="tw-flex tw-w-full tw-justify-between">
+																			<div class="tw-flex tw-flex-1 tw-space-x-1">
+																				<a-checkbox
+																					:checked="isPrintChecked(item.id)"
+																					class="tw-mr-2"
+																					@change="handlePrintCheckbox($event, item.id)" />
+																				<div>
+																					<a-button size="small"
+																						@click="changeOrder(index, true)">
+																						<template #icon>
+																							<UpOutlined />
+																						</template>
+																					</a-button>
+																					<a-button size="small"
+																						@click="changeOrder(index, false)">
+																						<template #icon>
+																							<DownOutlined />
+																						</template>
+																					</a-button>
+																				</div>
+																				<div><b>{{ item.template ?
+																					item.template.name :
+																					''
+																				}}</b> -
+																					{{
+																						$date(item.created_at).format(`YYYY-MM-DD
+																					HH:mm`) }}</div>
+																			</div>
+																			<a-space>
+																				<a-button type="primary" size="small"
+																					@click="handleEditChange(item.id)">
+																					<template #icon>
+																						<EditOutlined />
+																					</template>
+																				</a-button>
+																				<a-popconfirm class="tw-z-[10000]"
+																					title="Устгах уу?" ok-text="Тийм"
+																					cancel-text="Үгүй"
+																					@confirm="deleteDocument(item.id)">
+																					<a-button danger size="small">
+																						<template #icon>
+																							<DeleteOutlined />
+																						</template>
+																					</a-button>
+																				</a-popconfirm>
+																			</a-space>
+																		</div>
+																	</a-list-item>
+																</template>
+															</a-list>
+														</perfect-scrollbar>
+													</div>
+													<div class="tw-shadow tw-grid tw-grid-cols-4 tw-gap-2 tw-p-2">
+														<div v-for="(img, img_index) in images" :key="img_index"
+															class="tw-relative tw-group tw-border">
+															<div
+																class="tw-absolute tw-w-full tw-h-full tw-bg-black tw-hidden tw-bg-opacity-50 group-hover:tw-flex tw-items-center tw-justify-center">
+																<div class="tw-flex tw-flex-col tw-space-y-2">
+																	<a-button size="small" danger
+																		@click="deleteImage(img_index)">Хасах</a-button>
+																</div>
+															</div>
+															<img :src="img" class="tw-w-full tw-h-20 tw-object-cover" />
+														</div>
+													</div>
+													<a-space>
+														<a-button type="primary" @click="selectAll()">Бүгдийг
+															сонгох</a-button>
+														<a-button type="primary" @click="showViewModal">Хэвлэх</a-button>
+														<a-button type="primary" @click="showImages">Зураг
+															хавсаргах</a-button>
+														<a-button type="primary"
+															@click="addVisible = !addVisible">Хаах</a-button>
+													</a-space>
 												</div>
-												<a-space>
-													<a-button type="primary" @click="showViewModal">Хэвлэх</a-button>
-													<a-button type="primary" @click="showImages">Зураг хавсаргах</a-button>
-													<a-button type="primary"
-														@click="addVisible = !addVisible">Хаах</a-button>
-												</a-space>
-											</div>
-										</template>
-									</a-dropdown>
-								</template>
-							</Edit>
-						</a-tab-pane>
-						<a-tab-pane key="2" tab="Шинээр нэмэх" force-render>
-							<Container>
-								<template #button>
-									<a-select @change="handleTemplateChange" placeholder="Боломжит маягтууд"
-										class="tw-w-40">
-										<a-select-option :value="tmp.id" v-for="(tmp, tmp_index) in templates"
-											:key="tmp_index">
-											{{ tmp.name }}
-										</a-select-option>
-									</a-select>
-								</template>
-							</Container>
-						</a-tab-pane>
-					</a-tabs>
-				</a-card>
-
+											</template>
+										</a-dropdown>
+									</template>
+								</Edit>
+							</a-tab-pane>
+							<a-tab-pane key="2" tab="Шинээр нэмэх" force-render>
+								<Container>
+									<template #button>
+										<a-select v-model:value="selectedTemplate" @change="handleTemplateChange"
+											placeholder="Боломжит маягтууд" class="tw-w-40">
+											<a-select-option :value="tmp.id" v-for="(tmp, tmp_index) in templates"
+												:key="tmp_index">
+												{{ tmp.name }}
+											</a-select-option>
+										</a-select>
+									</template>
+								</Container>
+							</a-tab-pane>
+						</a-tabs>
+					</a-card>
+				</a-affix>
 			</a-col>
 		</a-row>
 	</a-drawer>

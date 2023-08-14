@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
     Route::get('/documents/patient/{id}', [DocumentController::class, 'getByPatient']);
     Route::post('/documents/pdf', [DocumentController::class, 'getPDF']);
+    Route::post('/documents/ids', [DocumentController::class, 'getIds']);
 });
 
 

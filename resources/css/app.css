@@ -27,7 +27,35 @@ body {
     z-index: 10000 !important;
 }
 
+.ant-form-vertical .ant-form-item-label {
+    font-weight: bold !important;
+}
+
+h1,
+h2,
+p {
+    margin: 0 !important;
+}
+
+#printContent table {
+    width: 100% !important;
+}
+#printContent .table {
+    width: 100% !important;
+}
+
+#preview table {
+    width: 100% !important;
+}
+#preview .table {
+    width: 100% !important;
+}
 @media print {
+    @page {
+        /* size: A4; */
+        font-family: Arial, Helvetica, sans-serif;
+        /* margin: 1cm; */
+    }
     * {
         line-height: 5mm !important;
     }
@@ -37,7 +65,15 @@ body {
         height: 0 !important;
         clear: both !important;
     }
-    table {
+    #printContent table {
         width: 100% !important;
+        /* table-layout: fixed; */
+    }
+    #printContent .table {
+        /* page-break-after: always; */
+        width: 100% !important;
+    }
+    tr {
+        page-break-inside: avoid;
     }
 }

@@ -45,11 +45,11 @@ useEvent.on("preview:data:pass", async (data) => {
                         if (data[i].value) {
                             element.textContent = "✓";
                             element.style =
-                                "border: 1px solid #000; padding: 0 4px;";
+                                "border: 1px solid #000; width: 12px; height: 12px; display: inline-block; position: relative; text-align: center; font-size: 12px; font-weight: bold;";
                         } else {
                             element.textContent = "";
                             element.style =
-                                "border: 1px solid #000; padding: 0 8px;";
+                                "border: 1px solid #000; width: 12px; height: 12px; display: inline-block;";
                         }
                         break;
                     case "Select":
@@ -88,7 +88,7 @@ useEvent.on("preview:html:pass", async (obj) => {
                                 isBase64Image(obj.data[i].src)
                                     ? obj.data[i].src
                                     : getImage(`${obj.data[i].src}.png`)
-                            }" />`
+                            }" style="${obj.data[i].width ? 'width: ' + obj.data[i].width + 'px' : ''}" />`
                         );
                         break;
                     case "Bold":
@@ -158,7 +158,7 @@ useEvent.on("preview:html:pass", async (obj) => {
                                 isBase64Image(matchArr[3])
                                     ? matchArr[3]
                                     : getImage(`${matchArr[3]}.png`)
-                            }" />`
+                            }" style="${matchArr[4] ? 'width: ' + matchArr[4] + 'px' : ''}" />`
                         );
                         break;
                     case "u":
@@ -200,5 +200,5 @@ useEvent.on("preview:html:pass", async (obj) => {
 });
 </script>
 <template>
-    <div v-html="htmldata"></div>
+    <div id="preview" v-html="htmldata"></div>
 </template>

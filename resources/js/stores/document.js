@@ -32,8 +32,8 @@ const useDocumentStore = defineStore("document", {
                 message.success(resp.data?.message || "Маягт нэмэгдлээ");
                 this.documents = [...this.documents, resp.data.document];
                 this.patientDocuments = [
-                    ...this.patientDocuments,
                     resp.data.document,
+                    ...this.patientDocuments,
                 ];
             } else {
                 message.error(resp.data?.message || "Алдаа гарлаа");
@@ -91,6 +91,15 @@ const useDocumentStore = defineStore("document", {
         },
         async getPDF(html) {
             const resp = await useRequest.post(`/documents/pdf`, { html });
+            if (resp.resp.status === 200) {
+                message.success(resp.data?.message || "Амжилттай");
+                return resp.data;
+            } else {
+                message.error(resp.data?.message || "Алдаа гарлаа");
+            }
+        },
+        async getByIds(ids) {
+            const resp = await useRequest.post(`/documents/ids`, { ids });
             if (resp.resp.status === 200) {
                 message.success(resp.data?.message || "Амжилттай");
                 return resp.data;

@@ -54,6 +54,7 @@ useEvent.on('document:data:pass', (obj) => {
 				switch (matchArr[0]) {
 					case "z":
 						elToPush.src = matchArr[3]
+						elToPush.width = matchArr[4] || null
 						break;
 					case "u":
 					case "r":
@@ -159,7 +160,7 @@ const save = async () => {
 			<a-button type="primary" @click="save()">Хадгалах</a-button>
 		</a-space>
 		<a-form layout="vertical" v-if="elements.length > 0">
-			<perfect-scrollbar style="height: calc(100vh - 200px)">
+			<perfect-scrollbar style="height: calc(100vh - 220px)">
 				<div class="tw-grid tw-grid-cols-3 tw-gap-4">
 					<template v-for="(el, el_index) in groupElements.inputs">
 						<a-card size="small" class="tw-mb-2">

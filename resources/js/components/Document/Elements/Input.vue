@@ -35,7 +35,8 @@ const mouseleave = () => {
 </script>
 <template>
 	<a-form-item :label="propperties.label" class="tw-mb-0" @mouseenter="mouseenter" @mouseleave="mouseleave">
-		<a-textarea autoSize :value="modelValue.value" :placeholder="propperties.label" @input="setData"
-			size="small"></a-textarea>
+		<a-textarea autoSize :value="modelValue.value"
+			:placeholder="propperties.label ? propperties.label.trim().replace(/\s{2,}/g, ' ').replace(/\n/g, '') : ''"
+			@input="setData" size="small"></a-textarea>
 	</a-form-item>
 </template>

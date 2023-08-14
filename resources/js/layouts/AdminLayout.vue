@@ -8,6 +8,7 @@ import PackageModal from '../components/Modals/Package.vue'
 import TemplateModal from '../components/Modals/Template.vue'
 import ViewModal from '../components/Modals/View.vue'
 import PdfModal from '../components/Modals/pdf.vue'
+import PdfPages from '../components/Modals/Pdfpages.vue'
 import Blank from '../components/Blank.vue'
 export default {
 	name: 'AdminLayout',
@@ -21,7 +22,8 @@ export default {
 		TemplateModal,
 		ViewModal,
 		DocumentDrawer,
-		PdfModal
+		PdfModal,
+		PdfPages
 	}
 }
 </script>
@@ -43,5 +45,6 @@ export default {
 	<ViewModal />
 	<DocumentDrawer />
 	<PdfModal />
+	<PdfPages />
 </template>
 
