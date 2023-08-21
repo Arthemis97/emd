@@ -18,6 +18,11 @@ class Patient extends Model
         return $this->belongsTo('App\Models\Package');
     }
 
+    public function images()
+    {
+        return $this->hasMany('App\Models\Image');
+    }
+
     public function document()
     {
         return $this->hasMany('App\Models\Document');

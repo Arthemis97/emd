@@ -118,6 +118,8 @@ class PatientController extends Controller
         $patient = Patient::find($id);
 
         if ($patient) {
+            $patient->images()->forceDelete();
+            $patient->document()->forceDelete();
             $patient->delete();
             return response()->json(['message' => 'Үйлчлүүлэгч устгагдлаа'], 200);
         } else {
