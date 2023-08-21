@@ -145,10 +145,15 @@ class DocumentController extends Controller
     public function getIds(Request $request)
     {
         $data = $request->all();
-        $documents = Document::whereIn('id', $data['ids'])->get();
-        foreach ($documents as $key => $value) {
-            $documents[$key]->template = Template::findOrFail($value->template_id);
+        $documents = [];
+        foreach ($data['ids'] as $key => $value) {
+            $document = Document::findOrFail($value);
+            $document->template = Template::findOrFail($document->template_id);
+            array_push($documents, $document);
         }
+        // foreach ($documents as $key => $value) {
+        //     $documents[$key]->template = Template::findOrFail($value->template_id);
+        // }
         return response()->json(['message' => 'Амжилттай', 'document' => $documents], 200);
     }
 }
