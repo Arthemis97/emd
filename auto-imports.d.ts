@@ -57,6 +57,7 @@ declare global {
   const onUpdated: typeof import('vue')['onUpdated']
   const package: typeof import('./resources/js/stores/package.js')['default']
   const patient: typeof import('./resources/js/stores/patient.js')['default']
+  const pdfUrl: typeof import('./resources/js/composables/useHelpers.js')['pdfUrl']
   const provide: typeof import('vue')['provide']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']

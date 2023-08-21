@@ -1,3 +1,4 @@
+const pdfurl = import.meta.env.VITE_PDF_URL;
 const apiurl = import.meta.env.VITE_API_URL;
 export const removeNullProperties = (obj) => {
     const newObj = {};
@@ -7,6 +8,10 @@ export const removeNullProperties = (obj) => {
         }
     }
     return newObj;
+};
+
+export const pdfUrl = () => {
+    return pdfurl;
 };
 
 export const imageUrlToBase64 = async (imageUrl) => {

@@ -34,7 +34,7 @@ const printDoc = async () => {
     }
     formData.append('temp', uniqueId);
 
-    const response = await fetch('http://localhost:4000/generate', {
+    const response = await fetch(`${pdfUrl()}/generate`, {
         method: 'POST',
         body: formData
       });
@@ -75,7 +75,7 @@ const fileSelected = async (e) => {
     }
     formData.append('temp', uniqueId);
 
-    const response = await fetch('http://localhost:4000/generate', {
+    const response = await fetch(`${pdfUrl()}/generate`, {
         method: 'POST',
         body: formData
       });
