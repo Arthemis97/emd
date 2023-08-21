@@ -6,7 +6,7 @@ use App\Models\Document;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Dompdf\Dompdf;
+// use Dompdf\Dompdf;
 
 class DocumentController extends Controller
 {
@@ -125,21 +125,21 @@ class DocumentController extends Controller
 
     public function getPDF(Request $request)
     {
-        $data = $request->all();
-        $html = '<html><head><meta charset="utf-8"></head><body style="font-family: Arial, sans-serif;">';
-        $dompdf = new Dompdf([
-            'defaultFont' => 'DejaVu Sans'
-        ]);
-        foreach ($data['html'] as $key => $value) {
-            $html = $html . $value;
-        }
-        $html = $html . '</body></html>';
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        $pdfContent = $dompdf->output();
-        $base64EncodedPDF = base64_encode($pdfContent);
-        return response()->json(['message' => 'Амжилттай', 'data' => $base64EncodedPDF], 200);
+        // $data = $request->all();
+        // $html = '<html><head><meta charset="utf-8"></head><body style="font-family: Arial, sans-serif;">';
+        // $dompdf = new Dompdf([
+        //     'defaultFont' => 'DejaVu Sans'
+        // ]);
+        // foreach ($data['html'] as $key => $value) {
+        //     $html = $html . $value;
+        // }
+        // $html = $html . '</body></html>';
+        // $dompdf->loadHtml($html);
+        // $dompdf->setPaper('A4', 'portrait');
+        // $dompdf->render();
+        // $pdfContent = $dompdf->output();
+        // $base64EncodedPDF = base64_encode($pdfContent);
+        // return response()->json(['message' => 'Амжилттай', 'data' => $base64EncodedPDF], 200);
     }
 
     public function getIds(Request $request)
