@@ -8,6 +8,7 @@ declare global {
   const [alias]: typeof import('[package-name]')['[from]']
   const [import-names]: typeof import('[package-name]')['[import-names]']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
+  const apiUrl: typeof import('./resources/js/composables/useHelpers.js')['apiUrl']
   const auth: typeof import('./resources/js/stores/auth.js')['default']
   const axios: typeof import('axios')['default']
   const blank: typeof import('./resources/js/stores/blank.js')['default']

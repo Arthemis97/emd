@@ -34,7 +34,7 @@ const printDoc = async () => {
     }
     formData.append('temp', uniqueId);
 
-    const response = await fetch(`${pdfUrl()}/generate`, {
+    const response = await fetch(`${apiUrl()}/api/local/generate`, {
         method: 'POST',
         body: formData
       });
@@ -64,7 +64,7 @@ const fileSelected = async (e) => {
     const randomPart = Math.floor(Math.random() * 10000); 
     const uniqueId = `${timestamp}${randomPart}`;
     for (const file of Array.from(e.target.files)) {
-        formData.append('files', file);
+        formData.append('files[]', file);
     }
     for (const html of template.value.content) {
         formData.append('html[]', html);
@@ -75,7 +75,7 @@ const fileSelected = async (e) => {
     }
     formData.append('temp', uniqueId);
 
-    const response = await fetch(`${pdfUrl()}/generate`, {
+    const response = await fetch(`${apiUrl()}/api/local/generate`, {
         method: 'POST',
         body: formData
       });

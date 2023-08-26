@@ -76,9 +76,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/documents/{id}', [DocumentController::class, 'update']);
     Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
     Route::get('/documents/patient/{id}', [DocumentController::class, 'getByPatient']);
-    Route::post('/documents/pdf', [DocumentController::class, 'getPDF']);
     Route::post('/documents/ids', [DocumentController::class, 'getIds']);
 });
+
+
+
+// LOCAL ROUTES
+Route::post('/local/generate', [DocumentController::class, 'localGeneratePdf']);
+Route::post('/local/order', [DocumentController::class, 'localOrderPdf']);
 
 
 Route::post('/login', [AuthController::class, 'login']);

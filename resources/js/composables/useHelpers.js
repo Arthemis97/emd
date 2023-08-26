@@ -14,6 +14,10 @@ export const pdfUrl = () => {
     return pdfurl;
 };
 
+export const apiUrl = () => {
+    return apiurl;
+};
+
 export const imageUrlToBase64 = async (imageUrl) => {
     try {
         const response = await fetch(imageUrl);

@@ -13,7 +13,7 @@ const dragOptions = {
 
 const handleOk = async () => {
 	loading.value = true
-	const response = await fetch(`${pdfUrl()}/order`, {
+	const response = await fetch(`${apiUrl()}/api/local/order`, {
         method: 'POST',
 		headers: {
             'Content-Type': 'application/json'

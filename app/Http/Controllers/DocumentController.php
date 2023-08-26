@@ -6,7 +6,7 @@ use App\Models\Document;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-// use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Http;
 
 class DocumentController extends Controller
 {
@@ -123,25 +123,6 @@ class DocumentController extends Controller
         return response()->json(['message' => 'Амжилттай', 'document' => $documents], 200);
     }
 
-    public function getPDF(Request $request)
-    {
-        // $data = $request->all();
-        // $html = '<html><head><meta charset="utf-8"></head><body style="font-family: Arial, sans-serif;">';
-        // $dompdf = new Dompdf([
-        //     'defaultFont' => 'DejaVu Sans'
-        // ]);
-        // foreach ($data['html'] as $key => $value) {
-        //     $html = $html . $value;
-        // }
-        // $html = $html . '</body></html>';
-        // $dompdf->loadHtml($html);
-        // $dompdf->setPaper('A4', 'portrait');
-        // $dompdf->render();
-        // $pdfContent = $dompdf->output();
-        // $base64EncodedPDF = base64_encode($pdfContent);
-        // return response()->json(['message' => 'Амжилттай', 'data' => $base64EncodedPDF], 200);
-    }
-
     public function getIds(Request $request)
     {
         $data = $request->all();
@@ -151,9 +132,43 @@ class DocumentController extends Controller
             $document->template = Template::findOrFail($document->template_id);
             array_push($documents, $document);
         }
-        // foreach ($documents as $key => $value) {
-        //     $documents[$key]->template = Template::findOrFail($value->template_id);
-        // }
         return response()->json(['message' => 'Амжилттай', 'document' => $documents], 200);
+    }
+
+    public function localGeneratePdf(Request $request)
+    {
+        $files = $request->file('files');
+        $formData = $request->only('html', 'temp');
+        $req = Http::withHeaders([
+            'Accept' => 'multipart/form-data',
+        ]);
+        foreach ($formData as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $item) {
+                    $req = $req->attach($key . '[]', $item);
+                }
+            } else {
+                $req = $req->attach($key, $value);
+            }
+        }
+        if ($files) {
+            foreach ($files as $value) {
+                $req = $req->attach(
+                    'files',
+                    file_get_contents($value->path()),
+                    $value->getClientOriginalName()
+                );
+            }
+        }
+
+        $response = $req->post(env('VITE_PDF_URL') . "/generate");
+
+        return $response->body();
+    }
+
+    public function localOrderPdf(Request $request)
+    {
+        $response = Http::asForm()->post(env('VITE_PDF_URL') . '/order', $request->all());
+        return $response->body();
     }
 }
