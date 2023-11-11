@@ -144,7 +144,7 @@ const handleFileChange = async (e) => {
                     </div>
                 </a-col>
                 <a-col :span="12">
-                    <codemirror v-model="template.content[0]" placeholder="Code goes here..." :style="{ height: '100%' }"
+                    <codemirror v-model="template.content[0]" placeholder="Code goes here..." :style="{ height: '100vh' }"
                         :autofocus="true" :indent-with-tab="true" :tab-size="2" :extensions="extensions"
                         @ready="handleReady" />
                 </a-col>
